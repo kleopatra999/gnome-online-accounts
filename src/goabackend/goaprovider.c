@@ -1304,6 +1304,50 @@ goa_provider_get_all_finish (GList        **out_providers,
 
 /* ---------------------------------------------------------------------------------------------------- */
 
+typedef struct
+{
+  GError **error;
+  GList **out_providers;
+  GMainLoop *loop;
+  gboolean op_res;
+} GetAllSyncData;
+
+static void
+provider_get_all_sync_cb (GObject       *source_object,
+                          GAsyncResult  *res,
+                          gpointer       user_data)
+{
+  GetAllSyncData *data = (GetAllSyncData *) user_data;
+
+  data->op_res = goa_provider_get_all_finish (data->out_providers, res, data->error);
+  g_main_loop_quit (data->loop);
+}
+
+gboolean
+goa_provider_get_all_sync (GCancellable  *cancellable,
+                           GList        **out_providers,
+                           GError       **error)
+{
+  GetAllSyncData data;
+
+  data.error = error;
+  data.out_providers = out_providers;
+
+  /* HACK: Since telepathy-glib doesn't use the thread-default
+   * GMainContext for invoking the asynchronous callbacks, we can't
+   * push a new GMainContext here.
+   */
+  data.loop = g_main_loop_new (NULL, FALSE);
+
+  goa_provider_get_all (provider_get_all_sync_cb, &data);
+  g_main_loop_run (data.loop);
+  g_main_loop_unref (data.loop);
+
+  return data.op_res;
+}
+
+/* ---------------------------------------------------------------------------------------------------- */
+
 void
 goa_provider_remove_account (GoaProvider          *self,
                              GoaObject            *object,

@@ -126,6 +126,10 @@ void        goa_provider_ensure_builtins_loaded                (void);
 
 void        goa_provider_ensure_extension_points_registered    (void);
 
+gboolean    goa_provider_get_all_sync                          (GCancellable            *cancellable,
+                                                                GList                  **out_providers,
+                                                                GError                 **error);
+
 void        goa_provider_remove_account                        (GoaProvider             *self,
                                                                 GoaObject               *object,
                                                                 GCancellable            *cancellable,
