@@ -52,6 +52,7 @@ struct _GoaProvider
  * @ensure_credentials_sync: Virtual function for goa_provider_ensure_credentials_sync().
  * @show_account: Virtual function for goa_provider_show_account().
  * @get_credentials_generation: Virtual function for goa_provider_get_credentials_generation().
+ * @initialize: Virtual function for goa_provider_initialize().
  *
  * Class structure for #GoaProvider.
  */
@@ -92,6 +93,7 @@ struct _GoaProviderClass
   guint                   (*get_credentials_generation)   (GoaProvider            *self);
   GIcon                  *(*get_provider_icon)            (GoaProvider            *self,
                                                            GoaObject              *object);
+  void                    (*initialize)                   (GoaProvider            *self);
   void                    (*remove_account)               (GoaProvider            *self,
                                                            GoaObject              *object,
                                                            GCancellable           *cancellable,
@@ -129,6 +131,8 @@ void        goa_provider_ensure_extension_points_registered    (void);
 gboolean    goa_provider_get_all_sync                          (GCancellable            *cancellable,
                                                                 GList                  **out_providers,
                                                                 GError                 **error);
+
+void        goa_provider_initialize                            (GoaProvider             *self);
 
 void        goa_provider_remove_account                        (GoaProvider             *self,
                                                                 GoaObject               *object,
